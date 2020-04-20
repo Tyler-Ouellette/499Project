@@ -26,6 +26,7 @@ router.post(
         }
 
         const { name, email, password } = req.body;
+        const payment = [];
 
         try {
             let user = await User.findOne({ email });
@@ -45,6 +46,7 @@ router.post(
                 email,
                 avatar,
                 password,
+                payment
             });
 
           //  const salt = await bcrypt.genSalt(10);

@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
             },
             ccn: {
                 type: String,
-                length: 16 || 19,
+                length: 16,
                 required: true,
             },
             month: {

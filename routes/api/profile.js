@@ -303,7 +303,7 @@ router.put(
         };
 
         try {
-            const profile = await Profile.findOne({ user: req.user.id });
+            const profile = await User.findById(req.user.id);
 
             profile.payment.unshift(newCard);
 
@@ -312,7 +312,7 @@ router.put(
             res.json(profile);
         } catch (err) {
             console.error(err.message);
-            res.status(500).send('Server Error');
+            res.status(500).send('Server Error - fuck me');
         }
     }
 );
