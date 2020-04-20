@@ -116,6 +116,72 @@ export const createProfile = (formData, history, edit = false) => async dispatch
     }
 };
 
+// Add Payment
+export const addPayment = (formData, history) => async dispatch => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        const res = await axios.put('/api/profile/add-payment', formData, config);
+
+        dispatch({
+            type: UPDATE_PROFILE,
+            payload: res.data,
+        });
+
+        dispatch(setAlert('Payment Added', 'success'));
+
+        history.push('/dashboard');
+    } catch (err) {
+        const errors = err.response.data.errors;
+
+        if (errors) {
+            errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+        }
+
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: { msg: err.response.statusText, status: err.response.status },
+        });
+    }
+};
+
+// Edit Experience
+export const editPayment = (formData, history, payment_id) => async dispatch => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        const res = await axios.put(`/api/profile/payment/${payment_id}`, formData, config);
+
+        dispatch({
+            type: UPDATE_PROFILE,
+            payload: res.data,
+        });
+
+        dispatch(setAlert('Payment Updated', 'success'));
+
+        // history.push('/dashboard');
+    } catch (err) {
+        const errors = err.response.data.errors;
+
+        if (errors) {
+            errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+        }
+
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: { msg: err.response.statusText, status: err.response.status },
+        });
+    }
+};
+
 // Add Experience
 export const addExperience = (formData, history) => async dispatch => {
     try {
