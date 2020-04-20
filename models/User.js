@@ -25,6 +25,32 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    payment: [
+        {
+            name: {
+                type: String,
+                required: true,
+            },
+            ccn: {
+                type: String,
+                length: 16 || 19,
+                required: true,
+            },
+            month: {
+                type: Number,
+                required: true,
+            },
+            year: {
+                type: Number,
+                required: true,
+            },
+            cvv2: {
+                type: Number,
+                required: true,
+                length: 3,
+            },
+        },
+    ],
 });
 
 // eslint-disable-next-line no-multi-assign, no-undef

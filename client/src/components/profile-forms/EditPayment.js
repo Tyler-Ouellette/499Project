@@ -1,10 +1,10 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { addPayment } from '../../actions/profile';
+import { editPayment, getCurrentProfile } from '../../actions/profile';
 
-const AddPayment = ({ addPayment, history }) => {
+const EditPayment = ({ editPayment, history, profile: { profile, loading }, getCurrentProfile }) => {
     const [formData, setFormData] = useState({
         name: '',
         ccn: '',
@@ -12,14 +12,30 @@ const AddPayment = ({ addPayment, history }) => {
         year: '',
         cvv2: '',
     });
+
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29];
 
-<<<<<<< Updated upstream
-    const { name, ccnum, month, year, cvv2 } = formData;
-=======
+    useEffect(() => {
+        getCurrentProfile();
+        try {
+            profile.payment.forEach(pay => {
+                if (pay._id === history.location.state.key) {
+                    setFormData({
+                        name: loading || !pay.name ? '' : pay.name,
+                        ccn: loading || !pay.ccn ? '' : pay.ccn,
+                        month: loading || !pay.month ? '' : pay.month,
+                        year: loading || !pay.year ? '' : pay.year,
+                        cvv2: loading || !pay.cvv2 ? '' : pay.cvv2,
+                    });
+                }
+            });
+        } catch (err) {
+            console.log(err.msg);
+        }
+    }, [loading, getCurrentProfile, profile.payment, history.location.state.key]);
+
     const { name, ccn, month, year, cvv2 } = formData;
->>>>>>> Stashed changes
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -31,7 +47,7 @@ const AddPayment = ({ addPayment, history }) => {
                 className="form"
                 onSubmit={e => {
                     e.preventDefault();
-                    addPayment(formData, history);
+                    editPayment(formData, history);
                 }}>
                 <div className="form-group">
                     <label>Name on Card</label>
@@ -49,13 +65,8 @@ const AddPayment = ({ addPayment, history }) => {
                     <input
                         type="text"
                         placeholder="Card Number"
-<<<<<<< Updated upstream
-                        name="ccnum"
-                        value={ccnum}
-=======
                         name="ccn"
                         value={ccn}
->>>>>>> Stashed changes
                         onChange={e => onChange(e)}
                         required
                         minLength={16}
@@ -107,8 +118,14 @@ const AddPayment = ({ addPayment, history }) => {
     );
 };
 
-AddPayment.propTypes = {
-    addPayment: PropTypes.func.isRequired,
+EditPayment.propTypes = {
+    editPayment: PropTypes.func.isRequired,
+    getCurrentProfile: PropTypes.func.isRequired,
+    profile: PropTypes.object.isRequired,
 };
 
-export default connect(null, { addPayment })(withRouter(AddPayment));
+const mapStateToProps = state => ({
+    profile: state.profile,
+});
+
+export default connect(mapStateToProps, { editPayment, getCurrentProfile })(withRouter(EditPayment));
