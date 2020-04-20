@@ -272,14 +272,18 @@ router.put(
             check('name', 'Name on Card is required')
                 .not()
                 .isEmpty(),
-            check('ccn', 'Credit Card Number is required').isLength(16 || 19),
+            check('ccn', 'Credit Card Number is required')
+                .not()
+                .isEmpty(),
             check('month', 'Expiry month is required')
                 .not()
                 .isEmpty(),
             check('year', 'Expiry year is required')
                 .not()
                 .isEmpty(),
-            check('cvv2', 'cvv2 is required').isLength(3),
+            check('cvv2', 'cvv2 is required')
+                .not()
+                .isEmpty(),
         ],
     ],
     async (req, res) => {
@@ -314,7 +318,7 @@ router.put(
 );
 
 // @route    PUT api/profile/payment/:pay_Id
-// @desc     edit profile experience
+// @desc     edit payment
 // @access   Private
 router.put(
     '/payment/:payment_id',
@@ -324,7 +328,9 @@ router.put(
             check('name', 'Name on Card is required')
                 .not()
                 .isEmpty(),
-            check('ccn', 'Credit Card Number is required').isLength(16 || 19),
+            check('ccn', 'Credit Card Number is required')
+                .not()
+                .isEmpty(),
             check('month', 'Expiry month is required')
                 .not()
                 .isEmpty(),
