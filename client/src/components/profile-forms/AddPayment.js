@@ -50,16 +50,11 @@ const AddPayment = ({ addPayment, history }) => {
                         onChange={e => onChange(e)}
                         required
                         minLength={16}
-                        maxLength={19}
+                        maxLength={16}
                     />
                 </div>
                 <label>Expiry Month</label>
-                <select
-                    // type="text"
-                    // placeholder="Field of Study"
-                    name="month"
-                    value={month}
-                    onChange={e => onChange(e)}>
+                <select type="text" name="month" value={month} onChange={e => onChange(e)}>
                     {months.map(num =>
                         num === 10 || num === 11 || num === 12 ? (
                             <option value={num}>{num}</option>

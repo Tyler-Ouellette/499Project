@@ -37,15 +37,15 @@ const UserSchema = new mongoose.Schema({
                 required: true,
             },
             month: {
-                type: Number,
+                type: String,
                 required: true,
             },
             year: {
-                type: Number,
+                type: String,
                 required: true,
             },
             cvv2: {
-                type: Number,
+                type: String,
                 required: true,
                 length: 3,
             },
