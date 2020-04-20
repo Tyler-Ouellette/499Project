@@ -16,11 +16,7 @@ router.get('/me', auth, async (req, res) => {
     try {
         const profile = await Profile.findOne({
             user: req.user.id,
-<<<<<<< Updated upstream
-        }).populate('user', ['name', 'avatar', 'email']);
-=======
         }).populate('user', ['name', 'avatar', 'email', 'payment']);
->>>>>>> Stashed changes
 
         if (!profile) {
             return res.status(400).json({ msg: 'There is no profile for this user' });

@@ -15,11 +15,7 @@ const AddPayment = ({ addPayment, history }) => {
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29];
 
-<<<<<<< Updated upstream
-    const { name, ccnum, month, year, cvv2 } = formData;
-=======
     const { name, ccn, month, year, cvv2 } = formData;
->>>>>>> Stashed changes
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -49,13 +45,8 @@ const AddPayment = ({ addPayment, history }) => {
                     <input
                         type="text"
                         placeholder="Card Number"
-<<<<<<< Updated upstream
-                        name="ccnum"
-                        value={ccnum}
-=======
                         name="ccn"
                         value={ccn}
->>>>>>> Stashed changes
                         onChange={e => onChange(e)}
                         required
                         minLength={16}
