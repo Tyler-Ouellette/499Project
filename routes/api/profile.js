@@ -16,7 +16,7 @@ router.get('/me', auth, async (req, res) => {
     try {
         const profile = await Profile.findOne({
             user: req.user.id,
-        }).populate('user', ['name', 'avatar']);
+        }).populate('user', ['name', 'avatar', 'email']);
 
         if (!profile) {
             return res.status(400).json({ msg: 'There is no profile for this user' });
@@ -36,7 +36,14 @@ router.post(
     '/',
     [
         auth,
-        [check('status', 'Status is required').not().isEmpty(), check('skills', 'Skills is required').not().isEmpty()],
+        [
+            check('status', 'Status is required')
+                .not()
+                .isEmpty(),
+            check('skills', 'Skills is required')
+                .not()
+                .isEmpty(),
+        ],
     ],
     async (req, res) => {
         const errors = validationResult(req);
@@ -69,7 +76,7 @@ router.post(
         if (status) profileFields.status = status;
         if (githubusername) profileFields.githubusername = githubusername;
         if (skills) {
-            profileFields.skills = skills.split(',').map((skill) => skill.trim());
+            profileFields.skills = skills.split(',').map(skill => skill.trim());
         }
 
         // Build social object
@@ -115,7 +122,7 @@ router.get('/user/:user_id', async (req, res) => {
     try {
         const profile = await Profile.findOne({
             user: req.params.user_id,
-        }).populate('user', ['name', 'avatar']);
+        }).populate('user', ['name', 'avatar', 'email']);
 
         if (!profile) return res.status(400).json({ msg: 'Profile not found' });
 
@@ -156,9 +163,15 @@ router.put(
     [
         auth,
         [
-            check('title', 'Title is required').not().isEmpty(),
-            check('company', 'Company is required').not().isEmpty(),
-            check('from', 'From date is required').not().isEmpty(),
+            check('title', 'Title is required')
+                .not()
+                .isEmpty(),
+            check('company', 'Company is required')
+                .not()
+                .isEmpty(),
+            check('from', 'From date is required')
+                .not()
+                .isEmpty(),
         ],
     ],
     async (req, res) => {
@@ -202,9 +215,15 @@ router.put(
     [
         auth,
         [
-            check('title', 'Title is required').not().isEmpty(),
-            check('company', 'Company is required').not().isEmpty(),
-            check('from', 'From date is required').not().isEmpty(),
+            check('title', 'Title is required')
+                .not()
+                .isEmpty(),
+            check('company', 'Company is required')
+                .not()
+                .isEmpty(),
+            check('from', 'From date is required')
+                .not()
+                .isEmpty(),
         ],
     ],
     async (req, res) => {
@@ -228,10 +247,123 @@ router.put(
         try {
             const profile = await Profile.findOne({ user: req.user.id });
 
-            const expIds = profile.experience.map((exp) => exp._id.toString());
+            const expIds = profile.experience.map(exp => exp._id.toString());
             const editIndex = expIds.indexOf(req.params.exp_id);
 
             profile.experience[editIndex] = newExp;
+
+            await profile.save();
+
+            res.json(profile);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    }
+);
+// @route    PUT api/profile/addPayment
+// @desc     Add payment information
+// @access   Private
+router.put(
+    '/addPayment',
+    [
+        auth,
+        [
+            check('name', 'Name on Card is required')
+                .not()
+                .isEmpty(),
+            check('ccn', 'Credit Card Number is required')
+                .not()
+                .isEmpty(),
+            check('month', 'Expiry month is required')
+                .not()
+                .isEmpty(),
+            check('year', 'Expiry year is required')
+                .not()
+                .isEmpty(),
+            check('cvv2', 'cvv2 is required')
+                .not()
+                .isEmpty(),
+        ],
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { name, ccn, month, year, cvv2 } = req.body;
+
+        const newCard = {
+            name,
+            ccn,
+            month,
+            year,
+            cvv2,
+        };
+
+        try {
+            const profile = await Profile.findOne({ user: req.user.id });
+
+            profile.payment.unshift(newCard);
+
+            await profile.save();
+
+            res.json(profile);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error - fuck me');
+        }
+    }
+);
+
+// @route    PUT api/profile/payment/:pay_Id
+// @desc     edit payment
+// @access   Private
+router.put(
+    '/payment/:payment_id',
+    [
+        auth,
+        [
+            check('name', 'Name on Card is required')
+                .not()
+                .isEmpty(),
+            check('ccn', 'Credit Card Number is required')
+                .not()
+                .isEmpty(),
+            check('month', 'Expiry month is required')
+                .not()
+                .isEmpty(),
+            check('year', 'Expiry year is required')
+                .not()
+                .isEmpty(),
+            check('cvv2', 'cvv2 is required')
+                .not()
+                .isEmpty(),
+        ],
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { name, ccn, month, year, cvv2 } = req.body;
+
+        const newCard = {
+            name,
+            ccn,
+            month,
+            year,
+            cvv2,
+        };
+
+        try {
+            const profile = await Profile.findOne({ user: req.user.id });
+
+            const cardIds = profile.payment.map(payment => payment._id.toString());
+            const editIndex = cardIds.indexOf(req.params.payment_id);
+
+            profile.payment[editIndex] = newCard;
 
             await profile.save();
 
@@ -251,10 +383,18 @@ router.put(
     [
         auth,
         [
-            check('school', 'School is required').not().isEmpty(),
-            check('degree', 'Degree is required').not().isEmpty(),
-            check('fieldofstudy', 'Field of study is required').not().isEmpty(),
-            check('from', 'From date is required').not().isEmpty(),
+            check('school', 'School is required')
+                .not()
+                .isEmpty(),
+            check('degree', 'Degree is required')
+                .not()
+                .isEmpty(),
+            check('fieldofstudy', 'Field of study is required')
+                .not()
+                .isEmpty(),
+            check('from', 'From date is required')
+                .not()
+                .isEmpty(),
         ],
     ],
     async (req, res) => {
@@ -278,7 +418,7 @@ router.put(
         try {
             const profile = await Profile.findOne({ user: req.user.id });
 
-            const eduIds = profile.education.map((edu) => edu._id.toString());
+            const eduIds = profile.education.map(edu => edu._id.toString());
             const editIndex = eduIds.indexOf(req.params.edu_id);
             profile.education[editIndex] = newEdu;
 
@@ -295,7 +435,7 @@ router.put(
 router.delete('/experience/:exp_id', auth, async (req, res) => {
     try {
         const foundProfile = await Profile.findOne({ user: req.user.id });
-        const expIds = foundProfile.experience.map((exp) => exp._id.toString());
+        const expIds = foundProfile.experience.map(exp => exp._id.toString());
         // if i dont add .toString() it returns this weird mongoose coreArray and the ids are somehow objects and it still deletes anyway even if you put /experience/5
         const removeIndex = expIds.indexOf(req.params.exp_id);
         if (removeIndex === -1) {
@@ -319,10 +459,18 @@ router.put(
     [
         auth,
         [
-            check('school', 'School is required').not().isEmpty(),
-            check('degree', 'Degree is required').not().isEmpty(),
-            check('fieldofstudy', 'Field of study is required').not().isEmpty(),
-            check('from', 'From date is required').not().isEmpty(),
+            check('school', 'School is required')
+                .not()
+                .isEmpty(),
+            check('degree', 'Degree is required')
+                .not()
+                .isEmpty(),
+            check('fieldofstudy', 'Field of study is required')
+                .not()
+                .isEmpty(),
+            check('from', 'From date is required')
+                .not()
+                .isEmpty(),
         ],
     ],
     async (req, res) => {
@@ -361,7 +509,7 @@ router.put(
 router.delete('/education/:edu_id', auth, async (req, res) => {
     try {
         const foundProfile = await Profile.findOne({ user: req.user.id });
-        const eduIds = foundProfile.education.map((edu) => edu._id.toString());
+        const eduIds = foundProfile.education.map(edu => edu._id.toString());
         // if i dont add .toString() it returns this weird mongoose coreArray and the ids are somehow objects and it still deletes anyway even if you put /education/5
         const removeIndex = eduIds.indexOf(req.params.edu_id);
         if (removeIndex === -1) {
