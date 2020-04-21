@@ -64,7 +64,7 @@ const AddPayment = ({ addPayment, history }) => {
                     )}
                 </select>
                 <label>Expiry Year</label>
-                <select name="year" value={year} onChange={e => onChange(e)}>
+                <select type="text" name="year" value={year} onChange={e => onChange(e)}>
                     {years.map(year => (
                         <option value={year}>{year}</option>
                     ))}
